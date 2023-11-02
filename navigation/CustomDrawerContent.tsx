@@ -3,14 +3,9 @@ import { DrawerContentScrollView } from "@react-navigation/drawer";
 import { useEffect } from "react";
 import { Pressable, Text, View, StyleSheet } from "react-native";
 
-import { DrawerListItem } from "./Drawertem";
 import { COLORS, SPACING } from "../theme";
 
 export const CustomDrawerContent = (props: any) => {
-  useEffect(() => {
-    console.log(props.state);
-  }, []);
-
   return (
     <DrawerContentScrollView {...props}>
       {props.state.routes.map((route: { name: string }, index: string) => (

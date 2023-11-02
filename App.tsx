@@ -1,19 +1,23 @@
-import 'react-native-gesture-handler';
+import "react-native-gesture-handler";
 
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from "@react-navigation/native";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Provider } from "react-redux";
 
-import { NavigationContainer } from '@react-navigation/native';
-
-import { DrawerNavigator } from './navigation/Drawer.navigator';
+import { DrawerNavigator } from "./navigation/Drawer.navigator";
+import { MainNavigation } from "./navigation/MainNav.navigator";
+import { store } from "./store";
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <DrawerNavigator />
-      </NavigationContainer>
+      <Provider store={store}>
+        <NavigationContainer>
+          <MainNavigation />
+        </NavigationContainer>
+      </Provider>
     </SafeAreaProvider>
   );
 }
@@ -21,8 +25,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
