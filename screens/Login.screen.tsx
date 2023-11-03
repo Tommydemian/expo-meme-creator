@@ -1,15 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   StyleSheet,
-  Text,
-  TextInput,
   View,
-  Pressable,
   ActivityIndicator,
   KeyboardAvoidingView,
+  Text,
 } from "react-native";
 
-//import { InputForm } from "../components/InputForm";
+import { AppButton } from "../components/AppButton";
+import { InputForm } from "../components/InputForm";
 import { UserData, setLoggedIn, updateField } from "../features/user.slice";
 import { useAppDispatch, useAppSelector } from "../hooks/redux/hooks";
 import {
@@ -30,17 +29,28 @@ export const Login = () => {
   ] = useLoginUserMutation();
   const [registerUser, { isLoading, error, data }] = useRegisterUserMutation();
 
+  // Currying handleChange
   function handleChange(field: keyof UserData) {
     return function (value: string) {
       dispatch(updateField({ field, value }));
     };
   }
 
+  const handleLogin = useCallback(() => {
+    logUser({ email, password });
+  }, [email, password, logUser]);
+
+  const handleRegister = useCallback(() => {
+    registerUser({ email, password });
+  }, [email, password, registerUser]);
+
   useEffect(() => {
-    console.log(loginData);
-    if (loginData?.status === "fulfilled") dispatch(setLoggedIn(true));
-    console.log(isLoggedIn);
-  }, [loginData]);
+    if (loginData?.status === "fulfilled") {
+      dispatch(setLoggedIn(true));
+    } else {
+      loginError && console.log("unable to login", loginError.data);
+    }
+  }, [loginData, dispatch, loginError]);
 
   return (
     <View style={styles.container}>
@@ -50,39 +60,40 @@ export const Login = () => {
         }}
         behavior="padding"
       >
-        <TextInput
-          style={styles.formInput}
-          placeholder="email"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={handleChange("email")}
+        <InputForm
           autoCapitalize="none"
+          secureTextEntry={false}
+          placeholder="Email"
+          value={email}
+          keyboardType="email-address"
+          onChangeText={handleChange("email")}
+          accessibilityLabel="Email address input"
         />
-        <TextInput
-          style={styles.formInput}
+        <InputForm
           placeholder="password"
           keyboardType="default"
           secureTextEntry
           value={password}
           onChangeText={handleChange("password")}
           autoCapitalize="none"
+          accessibilityLabel="Password input"
         />
         {isLoading && (
           <ActivityIndicator size={20} color={COLORS.colorOxfordBlue} />
         )}
-        <Pressable
-          onPress={() => logUser({ email, password })}
-          style={[styles.submitButton]}
-        >
-          <Text style={styles.submitButtonText}>Log In</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => registerUser({ email, password })}
-          style={[styles.submitButton]}
-        >
-          <Text style={styles.submitButtonText}>Register</Text>
-        </Pressable>
-        {loginData && <Text>data</Text>}
+        <AppButton
+          accessibilityLabel="Log in "
+          buttonText="Log In"
+          onPress={handleLogin}
+        />
+        {(loginError as { data: string; status: string }) && (
+          <Text>{loginError.data}</Text>
+        )}
+        <AppButton
+          accessibilityLabel="Sign up for a new account"
+          buttonText="Sign Up"
+          onPress={handleRegister}
+        />
       </KeyboardAvoidingView>
     </View>
   );
@@ -94,18 +105,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: "10%",
-  },
-  formInput: {
-    paddingVertical: SPACING.spacing10,
-  },
-  submitButton: {
-    backgroundColor: COLORS.colorYaleBlue,
-    width: "100%",
-    paddingVertical: SPACING.spacing10,
-    borderRadius: SPACING.spacing10,
-  },
-  submitButtonText: {
-    color: COLORS.colorWhite,
-    textAlign: "center",
   },
 });
