@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
-import { useEffect } from "react";
 import { Pressable, Text, View, StyleSheet } from "react-native";
 
 import { COLORS, SPACING } from "../theme";
@@ -9,7 +8,10 @@ export const CustomDrawerContent = (props: any) => {
   return (
     <DrawerContentScrollView {...props}>
       {props.state.routes.map((route: { name: string }, index: string) => (
-        <Pressable onPress={() => props.navigation.navigate(route.name)}>
+        <Pressable
+          key={index}
+          onPress={() => props.navigation.navigate(route.name)}
+        >
           <View
             style={[
               styles.listItemContainer,
